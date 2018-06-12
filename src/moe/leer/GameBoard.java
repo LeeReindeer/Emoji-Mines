@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -136,7 +135,7 @@ public class GameBoard extends JFrame {
   private void initFrame() {
     this.setSize(500 * size / 8, 500 * size / 8 + 100);
     this.setTitle("Emoji Mines");
-    mineIcon = new ImageIcon(getClass().getClassLoader().getResource("moe/leer/resource/mine.png"));
+    mineIcon = new ImageIcon(getClass().getClassLoader().getResource("resource/mine.png"));
     this.setIconImage(mineIcon.getImage());
     this.setResizable(false);
     this.setLayout(new BorderLayout(8, 8));
