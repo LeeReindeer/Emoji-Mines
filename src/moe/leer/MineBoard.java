@@ -242,7 +242,7 @@ public class MineBoard extends JPanel {
   private void handleRightClick(Point point, JButton box) {
     Log.d(TAG, "right click");
     if (flags.size() >= mines.size() || !box.isEnabled()
-            || isFirstTimeClick || isUnOpen(point)) {
+            || isFirstTimeClick || isOpen(point)) {
       Log.d(TAG, "can't flag any more");
       return;
     }
@@ -440,6 +440,13 @@ public class MineBoard extends JPanel {
       return false;
     }
     return !open[point.x][point.y];
+  }
+
+  private boolean isOpen(Point point) {
+    if (!validRange(point.x, point.y)) {
+      return false;
+    }
+    return open[point.x][point.y];
   }
 
   /**
