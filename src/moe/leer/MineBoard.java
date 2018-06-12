@@ -232,7 +232,7 @@ public class MineBoard extends JPanel {
 
   private void handleRightClick(Point point, JButton box) {
     Log.d(TAG, "right click");
-    if (flags.size() > mines.size()) {
+    if (flags.size() >= mines.size()) {
       Log.d(TAG, "can't flag any more");
       return;
     }
