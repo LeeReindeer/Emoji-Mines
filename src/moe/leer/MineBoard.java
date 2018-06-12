@@ -534,6 +534,7 @@ public class MineBoard extends JPanel {
           isAllFlaged = false;
         }
         showAdjBox(adjPoint);
+        clearFlag(adjPoint);
       }
     }
     return isAllFlaged;
