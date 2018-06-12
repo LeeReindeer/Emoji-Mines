@@ -4,6 +4,8 @@ import xyz.leezoom.java.util.Log;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Timer;
@@ -22,7 +24,7 @@ public class GameBoard extends JFrame {
   private JLabel flagLabel;
   private JLabel statusLabel;
 
-  private MyDialog dialog;
+//  private MyDialog dialog;
 
   private transient long time;
   private final Emoji emoji = new Emoji();
@@ -43,20 +45,14 @@ public class GameBoard extends JFrame {
     public void onWin() {
       timerPanel.stop();
       isGameStart = false;
-      dialog.setEmoji(emoji.WIN);
-      dialog.pack();
-      dialog.setLocationRelativeTo(GameBoard.this);
-      dialog.setVisible(true);
+      statusLabel.setIcon(emoji.WIN);
     }
 
     @Override
     public void onLose() {
       timerPanel.stop();
       isGameStart = false;
-      dialog.setEmoji(emoji.LOSE);
-      dialog.pack();
-      dialog.setLocationRelativeTo(GameBoard.this);
-      dialog.setVisible(true);
+      statusLabel.setIcon(emoji.LOSE);
     }
 
     @Override
@@ -113,7 +109,7 @@ public class GameBoard extends JFrame {
     this.getContentPane().add(controlPanel, BorderLayout.NORTH);
     this.getContentPane().add(mineBoard, BorderLayout.CENTER);
 
-    initDialog();
+    initStatusButton();
 //    this.addFocusListener(this);
     WindowAdapter windowAdapter = new WindowAdapter() {
       @Override
@@ -151,24 +147,21 @@ public class GameBoard extends JFrame {
     this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
   }
 
-  private void initDialog() {
-    dialog = new MyDialog(this, "dialog");
-    dialog.setAgainListener(e -> {
-      resetMineBoard();
-      timerPanel.reset();
-      this.repaint();
-    });
-    dialog.setChangeListener(e -> {
-      resetMineBoard();
-      timerPanel.reset();
-      this.repaint();
+  private void initStatusButton() {
+    statusLabel.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
+          resetMineBoard();
+          timerPanel.reset();
+          statusLabel.setIcon(emoji.MINE);
+          repaint();
+        }
+      }
     });
   }
 
   private void resetMineBoard() {
-//    this.remove(mineBoard);
-//    mineBoard = new MineBoard(size, mine);
-    dialog.dispose();
     this.setVisible(false);
     mineBoard.reset(size, mine);
     mineBoard.setStatusListener(statusListener);
