@@ -14,5 +14,4 @@ Thanks [algs4](https://algs4.cs.princeton.edu/home/).
 
 ## 🤔
 
-- 5 hours programing.
 - Inspired by [@TomatoKwok](https://github.com/tomatokwok).
