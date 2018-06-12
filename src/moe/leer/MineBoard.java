@@ -40,6 +40,7 @@ public class MineBoard extends JPanel {
   // 16 * 16 -> 40 mines , 30 * 30->99mines
   private int size = 8;
   private boolean[][] board;
+  private boolean[][] open;
   private JButton[][] boxes;
 
   public static final Color BACKGROUD_COLOR = Color.WHITE;
@@ -143,6 +144,7 @@ public class MineBoard extends JPanel {
     this.unionUF = new WeightedQuickUnionUF(size * size);
     emoji = new Emoji();
     board = new boolean[size][size];
+    open = new boolean[size][size];
     boxes = new JButton[size][size];
     isFirstTimeClick = true;
     isFirstTimeBlankClick = true;
@@ -239,7 +241,8 @@ public class MineBoard extends JPanel {
 
   private void handleRightClick(Point point, JButton box) {
     Log.d(TAG, "right click");
-    if (flags.size() >= mines.size()) {
+    if (flags.size() >= mines.size() || !box.isEnabled()
+            || isFirstTimeClick || isUnOpen(point)) {
       Log.d(TAG, "can't flag any more");
       return;
     }
@@ -249,7 +252,7 @@ public class MineBoard extends JPanel {
     } else {
       flags.add(point);
       // assume it is right before game ending
-      setFlagBox(box, true);
+      setFlagBox(point, true);
       // win when all mines are flagged, but not all box is clicked.
       if (flags.containsAll(mines)) {
         processWin();
@@ -269,15 +272,16 @@ public class MineBoard extends JPanel {
     }
     Log.d(TAG, "left click");
     if (isMine(point)) {
-      setMineBox(box);
+      setMineBox(point);
       processLose();
     } else {
+      open[point.x][point.y] = true;
       int mines = countMines(point);
       if (mines == 0) {
-        setBlankBox(box);
+        setBlankBox(point);
         showUnionBlankBlock(point);
       } else {
-        setNumberBox(box, mines);
+        setNumberBox(point, mines);
       }
     }
   }
@@ -343,26 +347,33 @@ public class MineBoard extends JPanel {
     initBox(box);
   }
 
-  private void setBlankBox(JButton box) {
+  private void setBlankBox(Point point) {
+    JButton box = boxes[point.x][point.y];
+    open[point.x][point.y] = true;
     box.setText("");
     box.setIcon(null);
     box.setBackground(BACKGROUD_COLOR);
     box.setEnabled(false);
   }
 
-  private void setNumberBox(JButton box, int mines) {
+  private void setNumberBox(Point point, int mines) {
+    JButton box = boxes[point.x][point.y];
+    open[point.x][point.y] = true;
     box.setBackground(BACKGROUD_COLOR);
     box.setIcon(emoji.numberEmojiMap.get(mines));
 
   }
 
-  private void setMineBox(JButton box) {
+  private void setMineBox(Point point) {
+    JButton box = boxes[point.x][point.y];
+    open[point.x][point.y] = true;
     box.setBackground(MINE_COLOR);
     box.setIcon(emoji.MINE);
 //    box.setText(Emoji.MINE); // mine emoji
   }
 
-  private void setFlagBox(JButton box, boolean correct) {
+  private void setFlagBox(Point point, boolean correct) {
+    JButton box = boxes[point.x][point.y];
 //    box.setText(Emoji.FLAG);
     box.setIcon(emoji.FLAG);
     if (correct) {
@@ -428,7 +439,7 @@ public class MineBoard extends JPanel {
     if (!validRange(point.x, point.y)) {
       return false;
     }
-    return boxes[point.x][point.y].getIcon() == null;
+    return !open[point.x][point.y];
   }
 
   /**
@@ -476,10 +487,11 @@ public class MineBoard extends JPanel {
     for (int i = 0; i < size; i++) {
       for (int j = 0; j < size; j++) {
         if (unionUF.connected(xyTo1D(point.x, point.y), xyTo1D(i, j))) {
-          points.add(new Point(i, j));
-          setBlankBox(boxes[i][j]);
+          Point p = new Point(i, j);
+          points.add(p);
+          setBlankBox(p);
           showNumberAroundBlank(i, j);
-          clearFlag(new Point(i, j));
+          clearFlag(p);
         }
       }
     }
@@ -507,11 +519,12 @@ public class MineBoard extends JPanel {
   private void showAdjBox(Point adjPoint) {
     if (validRange(adjPoint.x, adjPoint.y)
         && !isMine(adjPoint)) {
-      int count = countMines(new Point(adjPoint.x, adjPoint.y));
+      Point p = new Point(adjPoint.x, adjPoint.y);
+      int count = countMines(p);
       if (count == 0) {
-        setBlankBox(boxes[adjPoint.x][adjPoint.y]);
+        setBlankBox(p);
       } else {
-        setNumberBox(boxes[adjPoint.x][adjPoint.y], count);
+        setNumberBox(p, count);
       }
     }
   }
@@ -544,7 +557,9 @@ public class MineBoard extends JPanel {
           isAllFlaged = false;
         }
         showAdjBox(adjPoint);
-        clearFlag(adjPoint);
+        if (!isMine(adjPoint)) {
+          clearFlag(adjPoint);
+        }
       }
     }
     return isAllFlaged;
@@ -552,13 +567,13 @@ public class MineBoard extends JPanel {
 
   private void showAllMines() {
     for (Point m : mines) {
-      setMineBox(boxes[m.x][m.y]);
+      setMineBox(m);
     }
   }
 
   private void showAllFlags() {
     for (Point f : flags) {
-      setFlagBox(boxes[f.x][f.y], mines.contains(f));
+      setFlagBox(f, mines.contains(f));
     }
   }
 
