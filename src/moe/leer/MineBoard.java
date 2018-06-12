@@ -26,6 +26,10 @@ public class MineBoard extends JPanel {
 
   private static final String TAG = "MineBoard";
 
+
+  private Emoji emoji;
+//  private final ImageIcon mineIcon;
+//  private final ImageIcon flagIcon;
 //  private static final int UNOPEN = 0;
 //  private static final int MINE = 1;
 //  private static final int FLAG = 2;
@@ -60,6 +64,8 @@ public class MineBoard extends JPanel {
     mineRateMap.put(8, 10);
     mineRateMap.put(16, 40);
     mineRateMap.put(30, 99);
+//    mineIcon = new ImageIcon(getClass().getClassLoader().getResource("resource/emoji-mine-24.png"));
+//    flagIcon = new ImageIcon(getClass().getClassLoader().getResource("resource/emoji-flag-24.png"));
   }
 
   public static class Point {
@@ -135,6 +141,7 @@ public class MineBoard extends JPanel {
   private void initData(int size) {
     this.size = size;
     this.unionUF = new WeightedQuickUnionUF(size * size);
+    emoji = new Emoji();
     board = new boolean[size][size];
     boxes = new JButton[size][size];
     isFirstTimeClick = true;
@@ -303,7 +310,7 @@ public class MineBoard extends JPanel {
     box.setBackground(UNOPEN_COLOR);
     SwingUtil.setDefaultFont(box);
 //    box.setFont(new Font("Arial", Font.PLAIN, 20));
-    box.setText("");
+    box.setIcon(null);
     box.setSelected(false);
     box.setEnabled(true);
   }
@@ -338,23 +345,26 @@ public class MineBoard extends JPanel {
 
   private void setBlankBox(JButton box) {
     box.setText("");
+    box.setIcon(null);
     box.setBackground(BACKGROUD_COLOR);
     box.setEnabled(false);
   }
 
   private void setNumberBox(JButton box, int mines) {
     box.setBackground(BACKGROUD_COLOR);
-    box.setText(Emoji.numberEmojiMap.get(mines));
+    box.setIcon(emoji.numberEmojiMap.get(mines));
 
   }
 
   private void setMineBox(JButton box) {
     box.setBackground(MINE_COLOR);
-    box.setText(Emoji.MINE); // mine emoji
+    box.setIcon(emoji.MINE);
+//    box.setText(Emoji.MINE); // mine emoji
   }
 
   private void setFlagBox(JButton box, boolean correct) {
-    box.setText(Emoji.FLAG);
+//    box.setText(Emoji.FLAG);
+    box.setIcon(emoji.FLAG);
     if (correct) {
       box.setBackground(Color.CYAN);
     } else {
@@ -418,7 +428,7 @@ public class MineBoard extends JPanel {
     if (!validRange(point.x, point.y)) {
       return false;
     }
-    return boxes[point.x][point.y].getText().isEmpty();
+    return boxes[point.x][point.y].getIcon() == null;
   }
 
   /**

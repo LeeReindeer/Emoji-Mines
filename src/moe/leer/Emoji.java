@@ -1,5 +1,7 @@
 package moe.leer;
 
+import javax.swing.*;
+import java.net.URL;
 import java.util.HashMap;
 
 /**
@@ -7,25 +9,45 @@ import java.util.HashMap;
  * Created at 6/11/18 4:47 PM
  */
 public class Emoji {
-  public static final String MINE = "\uD83D\uDCA3";
-  public static final String FLAG = "\uD83C\uDF88";
-  public static final String TIME = "\uD83D\uDD50";
 
-  public static final String ONE = "1️⃣";
-  public static final String TWO = "2️⃣";
-  public static final String THREE = "3️⃣";
-  public static final String FOUR = "4️⃣";
-  public static final String FIVE = "5️⃣";
-  public static final String SIX = "6️⃣";
-  public static final String SEVEN = "7️⃣";
-  public static final String EIGHT = "8️⃣";
+  public final ImageIcon MINE_ICON;
 
-  public static final String WIN = "\uD83C\uDF1D";
-  public static final String LOSE = "\uD83C\uDF1A";
+  public final ImageIcon MINE;
+  public final ImageIcon FLAG;
+  public final ImageIcon TIME;
 
-  public static HashMap<Integer, String> numberEmojiMap;
+  public final ImageIcon ONE;
+  public final ImageIcon TWO;
+  public final ImageIcon THREE;
+  public final ImageIcon FOUR;
+  public final ImageIcon FIVE;
+  public final ImageIcon SIX;
+  public final ImageIcon SEVEN;
+  public final ImageIcon EIGHT;
 
-  static {
+  public final ImageIcon WIN;
+  public final ImageIcon LOSE;
+
+
+  public HashMap<Integer, ImageIcon> numberEmojiMap;
+
+  {
+    MINE_ICON = new ImageIcon(getResource("resource/emoji-mine.png"));
+
+    MINE = new ImageIcon(getResource("resource/emoji-mine-24.png"));
+    FLAG = new ImageIcon(getResource("resource/emoji-flag-24.png"));
+    TIME = new ImageIcon(getResource("resource/emoji-clock.png"));
+    WIN = new ImageIcon(getResource("resource/emoji-full-moon.png"));
+    LOSE = new ImageIcon(getResource("resource/emoji-new-moon.png"));
+
+    ONE = new ImageIcon(getResource("resource/emoji-one.png"));
+    TWO = new ImageIcon(getResource("resource/emoji-two.png"));
+    THREE = new ImageIcon(getResource("resource/emoji-three.png"));
+    FOUR = new ImageIcon(getResource("resource/emoji-four.png"));
+    FIVE = new ImageIcon(getResource("resource/emoji-five.png"));
+    SIX = new ImageIcon(getResource("resource/emoji-six.png"));
+    SEVEN = new ImageIcon(getResource("resource/emoji-seven.png"));
+    EIGHT = new ImageIcon(getResource("resource/emoji-eight.png"));
     numberEmojiMap = new HashMap<>();
     numberEmojiMap.put(1, ONE);
     numberEmojiMap.put(2, TWO);
@@ -35,5 +57,9 @@ public class Emoji {
     numberEmojiMap.put(6, SIX);
     numberEmojiMap.put(7, SEVEN);
     numberEmojiMap.put(8, EIGHT);
+  }
+
+  private URL getResource(String path) {
+    return this.getClass().getClassLoader().getResource(path);
   }
 }

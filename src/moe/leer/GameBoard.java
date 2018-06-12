@@ -17,12 +17,16 @@ public class GameBoard extends JFrame {
 
   public static final String TAG = "GameBoard";
   private MineBoard mineBoard;
+
   private TimerPanel timerPanel;
   private JLabel flagLabel;
+  private JLabel statusLabel;
+
   private MyDialog dialog;
 
   private transient long time;
-  private ImageIcon mineIcon;
+  private final Emoji emoji = new Emoji();
+
   private int size = 8;
   private int mine = 10;
 
@@ -39,7 +43,7 @@ public class GameBoard extends JFrame {
     public void onWin() {
       timerPanel.stop();
       isGameStart = false;
-      dialog.setMessage("You win " + Emoji.WIN);
+      dialog.setEmoji(emoji.WIN);
       dialog.pack();
       dialog.setLocationRelativeTo(GameBoard.this);
       dialog.setVisible(true);
@@ -49,7 +53,7 @@ public class GameBoard extends JFrame {
     public void onLose() {
       timerPanel.stop();
       isGameStart = false;
-      dialog.setMessage("You lose " + Emoji.LOSE);
+      dialog.setEmoji(emoji.LOSE);
       dialog.pack();
       dialog.setLocationRelativeTo(GameBoard.this);
       dialog.setVisible(true);
@@ -85,15 +89,20 @@ public class GameBoard extends JFrame {
     mineBoard = new MineBoard(size, mine);
     mineBoard.setStatusListener(statusListener);
     flagLabel = new JLabel();
+    statusLabel = new JLabel();
+    statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    statusLabel.setIcon(emoji.MINE);
+
     flagLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    SwingUtil.setDefaultFont(flagLabel, 15);
+    SwingUtil.setDefaultFont(flagLabel);
     updateFlag(0);
 
-    GridLayout gridLayout = new GridLayout(1, 2);
+    GridLayout gridLayout = new GridLayout(1, 3);
     gridLayout.setVgap(4);
     gridLayout.setHgap(4);
     controlPanel.setLayout(gridLayout);
     controlPanel.add(timerPanel);
+    controlPanel.add(statusLabel);
     controlPanel.add(flagLabel);
 //    controlPanel.add(startButton);
 //    controlPanel.add(stopButton);
@@ -135,8 +144,7 @@ public class GameBoard extends JFrame {
   private void initFrame() {
     this.setSize(500 * size / 8, 500 * size / 8 + 100);
     this.setTitle("Emoji Mines");
-    mineIcon = new ImageIcon(getClass().getClassLoader().getResource("resource/mine.png"));
-    this.setIconImage(mineIcon.getImage());
+    this.setIconImage(emoji.MINE_ICON.getImage());
     this.setResizable(false);
     this.setLayout(new BorderLayout(8, 8));
     this.setBackground(BACKGROUD_COLOR);
@@ -170,7 +178,8 @@ public class GameBoard extends JFrame {
   }
 
   private void updateFlag(int flagSize) {
-    flagLabel.setText(String.format("%s %d/%d", Emoji.FLAG, flagSize, mine));
+    flagLabel.setIcon(emoji.FLAG);
+    flagLabel.setText(String.format("%d/%d", flagSize, mine));
   }
 
   private void helper() {
@@ -192,8 +201,9 @@ public class GameBoard extends JFrame {
       super.paintComponent(g);
       centerX = this.getWidth() / 2;
       centerY = this.getHeight() / 2;
-      g.setFont(new Font("Arial", Font.PLAIN, 15));
-      g.drawString(Emoji.TIME + " " + getTimeFormatString(time), (int) centerX - 50, (int) centerY + 5);
+      g.setFont(new Font("Arial", Font.PLAIN, 20));
+      g.drawImage(emoji.TIME.getImage(), 0, 0, 24, 24, (img, infoflags, x, y, width, height) -> false);
+      g.drawString(getTimeFormatString(time), (int) centerX - 50, (int) centerY + 5);
     }
 
     public void start() {

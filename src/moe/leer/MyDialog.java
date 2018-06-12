@@ -64,6 +64,11 @@ public class MyDialog extends JDialog {
     msgLabel.setHorizontalAlignment(SwingConstants.CENTER);
   }
 
+  public void setEmoji(ImageIcon emoji) {
+    msgLabel.setIcon(emoji);
+    msgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+  }
+
   public void setAgainListener(ActionListener againListener) {
     this.againListener = againListener;
   }
