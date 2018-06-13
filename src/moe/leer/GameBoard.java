@@ -152,6 +152,7 @@ public class GameBoard extends JFrame {
       @Override
       public void mouseClicked(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
+          isGameStart = false;
           resetMineBoard();
           timerPanel.reset();
           statusLabel.setIcon(emoji.MINE);
