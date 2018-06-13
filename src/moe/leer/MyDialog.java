@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+@Deprecated
 public class MyDialog extends JDialog {
   private JPanel contentPane;
   private JButton buttonAgain;
