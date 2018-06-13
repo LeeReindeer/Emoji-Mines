@@ -196,8 +196,9 @@ public class MineBoard extends JPanel {
         JButton box = boxes[i][j];
         initBox(box);
         box.addMouseListener(new MouseAdapter() {
+
           @Override
-          public void mouseClicked(MouseEvent e) {
+          public void mousePressed(MouseEvent e) {
             if (e.getClickCount() > 2) {
               return;
             }
@@ -218,22 +219,16 @@ public class MineBoard extends JPanel {
                 timer.setRepeats(false);
                 timer.start();
               }
-//              // double click
-//              if (e.getClickCount() == 2) {
-//                handleDoublyClick(point);
-//                return;
-//              }
-//              if (e.getClickCount() == 1) {
-//                handleLeftClick(point, box);
-//              }
             } else if (SwingUtilities.isRightMouseButton(e)) {
               handleRightClick(point, box);
             }
           }
+
+          @Override
+          public void mouseClicked(MouseEvent e) {
+
+          }
         });
-//        box.addActionListener(e -> {
-//          handleLeftClick(point, box);
-//        });
         panel.add(box);
       }
     }
