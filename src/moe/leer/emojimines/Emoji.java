@@ -1,4 +1,4 @@
-package moe.leer;
+package moe.leer.emojimines;
 
 import javax.swing.*;
 import java.net.URL;

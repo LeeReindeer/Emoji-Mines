@@ -1,4 +1,4 @@
-package moe.leer;
+package moe.leer.emojimines;
 
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 import xyz.leezoom.java.util.Log;
