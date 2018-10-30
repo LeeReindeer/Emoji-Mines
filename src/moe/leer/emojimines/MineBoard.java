@@ -171,7 +171,7 @@ public class MineBoard extends JPanel {
     }
     mines = new ArrayList<>(totalMines);
     flags = new ArrayList<>(totalMines);
-    genRandomMines(totalMines);
+//    genRandomMines(totalMines);
   }
 
   private void genRandomMines(int mineSize) {
@@ -187,6 +187,67 @@ public class MineBoard extends JPanel {
     }
     Log.d(TAG, Arrays.deepToString(board));
   }
+
+  /**
+   * generate mines that ensures excludePoint won't be mine
+   */
+  private void genRandomMinesEnsured(int mineSize, Point excludePoint) {
+    Random random = new Random(System.currentTimeMillis());
+    while (mines.size() != mineSize) {
+      // [0, 63]
+      int nextMine = random.nextInt(size * size);
+      Point point = oneD2point(nextMine);
+      if (!mines.contains(point) && !point.equals(excludePoint)) {
+        board[point.x][point.y] = true;
+        mines.add(point);
+      }
+    }
+    Log.d(TAG, Arrays.deepToString(board));
+  }
+
+  /*
+  private void genBetterMinesEnsured(int mineSize, Point excludePoint) {
+    Random random = new Random(System.currentTimeMillis());
+    Point knownMine = null;
+    Map<Integer, Point> excludePoints = null;
+
+    if (excludePoint.x >= 1 && excludePoint.x < size
+        && excludePoint.y >= 1 && excludePoint.y < size) {
+      knownMine = new Point(excludePoint.x + 1, excludePoint.y + 1);
+    }
+    if (knownMine != null) {
+      board[knownMine.x][knownMine.y] = true;
+      excludePoints = new HashMap<>();
+      for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+          if (i != 0 && j != 0) {
+            Point adjPoint = new Point(knownMine.x + i, knownMine.y + j);
+            excludePoints.put(xyTo1D(knownMine.x + i, knownMine.y), adjPoint);
+          }
+        }
+      }
+    }
+    int remineSize = knownMine == null ? mineSize : mineSize - 1;
+    while (mines.size() != remineSize) {
+      // [0, 63]
+      int nextMine = random.nextInt(size * size);
+      Point point = oneD2point(nextMine);
+      // fixme
+      if (!mines.contains(point) && !point.equals(excludePoint)) {
+        if (excludePoints != null) {
+          if ( excludePoints.get(xyTo1D(point.x, point.y)) == null) {
+            board[point.y][point.y] = true;
+            mines.add(point);
+          }
+        } else {
+          board[point.x][point.y] = true;
+          mines.add(point);
+        }
+      }
+    }
+    Log.d(TAG, Arrays.deepToString(board));
+  }
+  */
 
   private void initBoard(JPanel panel) {
     for (int i = 0; i < size; i++) {
@@ -236,8 +297,8 @@ public class MineBoard extends JPanel {
 
   private void handleRightClick(Point point, JButton box) {
     Log.d(TAG, "right click");
-    if (flags.size() >= mines.size() || !box.isEnabled()
-            || isFirstTimeClick || isOpen(point)) {
+    if (!box.isEnabled()
+        || isFirstTimeClick || isOpen(point)) {
       Log.d(TAG, "can't flag any more");
       return;
     }
@@ -249,15 +310,22 @@ public class MineBoard extends JPanel {
       // assume it is right before game ending
       setFlagBox(point, true);
       // win when all mines are flagged, but not all box is clicked.
-      if (flags.containsAll(mines)) {
+      if (flags.containsAll(mines) && flags.size() == mines.size()) {
         processWin();
       }
     }
     statusListener.onFlagChange(flags.size());
   }
 
+  /**
+   * generate mines when first left click
+   *
+   * @param point clicked point
+   * @param box   clicked button
+   */
   private void handleLeftClick(Point point, JButton box) {
     if (isFirstTimeClick) {
+      genRandomMinesEnsured(mineRateMap.get(size), point);
       statusListener.onStart();
       isFirstTimeClick = false;
     }
