@@ -1,6 +1,7 @@
 # Emoji Mines
 
-![im](http://ojvnx00zs.bkt.clouddn.com/emoji-mines-2.png)
+
+![im](art/emoji-mines-example.png)
 
 ## 🌝
 
