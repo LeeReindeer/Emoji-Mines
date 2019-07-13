@@ -28,13 +28,6 @@ public class MineBoard extends JPanel {
 
 
   private Emoji emoji;
-//  private final ImageIcon mineIcon;
-//  private final ImageIcon flagIcon;
-//  private static final int UNOPEN = 0;
-//  private static final int MINE = 1;
-//  private static final int FLAG = 2;
-//  private static final int BLANK = 3;
-//  private static final int NUMBER = 4;
 
   // default size 8 * 8 -> 10 mines
   // 16 * 16 -> 40 mines , 30 * 30->99mines
@@ -171,83 +164,43 @@ public class MineBoard extends JPanel {
     }
     mines = new ArrayList<>(totalMines);
     flags = new ArrayList<>(totalMines);
-//    genRandomMines(totalMines);
-  }
-
-  private void genRandomMines(int mineSize) {
-    Random random = new Random(System.currentTimeMillis());
-    while (mines.size() != mineSize) {
-      // [0, 63]
-      int nextMine = random.nextInt(size * size);
-      Point point = oneD2point(nextMine);
-      if (!mines.contains(point)) {
-        board[point.x][point.y] = true;
-        mines.add(point);
-      }
-    }
-    Log.d(TAG, Arrays.deepToString(board));
   }
 
   /**
    * generate mines that ensures excludePoint won't be mine
+   * Called when first left click
    */
   private void genRandomMinesEnsured(int mineSize, Point excludePoint) {
+    // fill mines
+    int minesCnt = 0;
+    for (int i = 0; i < size; i++) {
+      for (int j = 0; j < size; j++) {
+        if (i == excludePoint.x && j == excludePoint.y) continue;
+        board[i][j] = true;
+        minesCnt++;
+        if (minesCnt == mineSize) break;
+      }
+      if (minesCnt == mineSize) break;
+    }
+    // shuffle array
     Random random = new Random(System.currentTimeMillis());
-    while (mines.size() != mineSize) {
-      // [0, 63]
-      int nextMine = random.nextInt(size * size);
-      Point point = oneD2point(nextMine);
-      if (!mines.contains(point) && !point.equals(excludePoint)) {
-        board[point.x][point.y] = true;
-        mines.add(point);
+    for (int i = 0; i < size; i++) {
+      for (int j = 0; j < size; j++) {
+        int randomPoint = random.nextInt(size * size);
+        Point point = oneD2point(randomPoint);
+        if (i == excludePoint.x && j == excludePoint.y || point.equals(excludePoint)) continue;
+        boolean temp = board[point.x][point.y];
+        board[point.x][point.y] = board[i][j];
+        board[i][j] = temp;
+      }
+    }
+    for (int i = 0; i < size; i++) {
+      for (int j = 0; j < size; j++) {
+        if (board[i][j]) mines.add(new Point(i, j));
       }
     }
     Log.d(TAG, Arrays.deepToString(board));
   }
-
-  /*
-  private void genBetterMinesEnsured(int mineSize, Point excludePoint) {
-    Random random = new Random(System.currentTimeMillis());
-    Point knownMine = null;
-    Map<Integer, Point> excludePoints = null;
-
-    if (excludePoint.x >= 1 && excludePoint.x < size
-        && excludePoint.y >= 1 && excludePoint.y < size) {
-      knownMine = new Point(excludePoint.x + 1, excludePoint.y + 1);
-    }
-    if (knownMine != null) {
-      board[knownMine.x][knownMine.y] = true;
-      excludePoints = new HashMap<>();
-      for (int i = -1; i <= 1; i++) {
-        for (int j = -1; j <= 1; j++) {
-          if (i != 0 && j != 0) {
-            Point adjPoint = new Point(knownMine.x + i, knownMine.y + j);
-            excludePoints.put(xyTo1D(knownMine.x + i, knownMine.y), adjPoint);
-          }
-        }
-      }
-    }
-    int remineSize = knownMine == null ? mineSize : mineSize - 1;
-    while (mines.size() != remineSize) {
-      // [0, 63]
-      int nextMine = random.nextInt(size * size);
-      Point point = oneD2point(nextMine);
-      // fixme
-      if (!mines.contains(point) && !point.equals(excludePoint)) {
-        if (excludePoints != null) {
-          if ( excludePoints.get(xyTo1D(point.x, point.y)) == null) {
-            board[point.y][point.y] = true;
-            mines.add(point);
-          }
-        } else {
-          board[point.x][point.y] = true;
-          mines.add(point);
-        }
-      }
-    }
-    Log.d(TAG, Arrays.deepToString(board));
-  }
-  */
 
   private void initBoard(JPanel panel) {
     for (int i = 0; i < size; i++) {
@@ -432,12 +385,10 @@ public class MineBoard extends JPanel {
     open[point.x][point.y] = true;
     box.setBackground(MINE_COLOR);
     box.setIcon(emoji.MINE);
-//    box.setText(Emoji.MINE); // mine emoji
   }
 
   private void setFlagBox(Point point, boolean correct) {
     JButton box = boxes[point.x][point.y];
-//    box.setText(Emoji.FLAG);
     box.setIcon(emoji.FLAG);
     if (correct) {
       box.setBackground(Color.CYAN);

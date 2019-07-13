@@ -168,19 +168,11 @@ public class GameBoard extends JFrame {
     mineBoard.setStatusListener(statusListener);
 //    this.getContentPane().add(mineBoard, BorderLayout.CENTER);
     this.setVisible(true);
-    helper();
   }
 
   private void updateFlag(int flagSize) {
     flagLabel.setIcon(emoji.FLAG);
     flagLabel.setText(String.format("%d/%d", flagSize, mine));
-  }
-
-  private void helper() {
-    for (MineBoard.Point point : mineBoard.getMines()) {
-      System.out.printf("[%d. %d] ", point.x, point.y);
-    }
-    System.out.println();
   }
 
   private class TimerPanel extends JPanel {
@@ -254,7 +246,7 @@ public class GameBoard extends JFrame {
   }
 
   public static void main(String[] args) {
+    Log.setLevel(Log.WARN);
     GameBoard game = new GameBoard();
-    game.helper();
   }
 }
